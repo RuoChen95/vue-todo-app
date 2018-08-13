@@ -1,0 +1,56 @@
+{
+  "name": "vue-todo-app2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "format": "prettier --write '{src,config,mock}/**/*.{js,json,vue,less}'"
+  },
+  "dependencies": {
+    "vue": "^2.5.17"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.0",
+    "@vue/cli-plugin-eslint": "^3.0.0",
+    "@vue/cli-service": "^3.0.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.2",
+    "eslint-plugin-vue": "^4.7.1",
+    "less": "^3.8.1",
+    "less-loader": "^4.1.0",
+    "prettier": "^1.14.2",
+    "vue-eslint-parser": "^3.2.2",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "eslintConfig": {
+    "root": true,
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+      "parser": "babel-eslint",
+      "ecmaVersion": 2017,
+      "sourceType": "module"
+    },
+    "env": {
+      "browser": true
+    },
+    "extends": ["prettier", "plugin:vue/essential"],
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": ["warn"]
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
