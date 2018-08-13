@@ -1,7 +1,7 @@
 <template>
   <div class="list">
       <button @click="completeAll()">Complete All</button>
-      <input v-model="data"/>
+      <input @keyup.enter="add()" v-model="data"/>
       <button @click="add()">add</button>
       <div>
           <div v-for="(components, index) in list" :key="index" class="section" :class="{'show': components.show}">
@@ -18,7 +18,7 @@
           </div>
       </div>
       <div class="banner">
-          <p>{{leftAmount}} item left</p>
+          <p>{{leftAmount}} {{pluralize('item', leftAmount)}} left</p>
           <div class="condition">
               <div @click="condition = 'all'" :class="{'active': this.condition == 'all'}">All</div>
               <div @click="condition = 'active'" :class="{'active': this.condition == 'active'}">Active</div>
@@ -30,6 +30,22 @@
 </template>
 
 <script>
+// useless but is a mind tools
+var filters = {
+  all: function(todos) {
+    return todos;
+  },
+  active: function(todos) {
+    return todos.filter(function(todo) {
+      return !todo.completed;
+    });
+  },
+  completed: function(todos) {
+    return todos.filter(function(todo) {
+      return todo.completed;
+    });
+  },
+};
 export default {
   name: 'list',
   props: {},
@@ -41,8 +57,11 @@ export default {
     };
   },
   watch: {
-    list: function(val) {
-      localStorage.setItem('vue-todo', JSON.stringify(val));
+    list: {
+      deep: true,
+      handler: function(val) {
+        localStorage.setItem('vue-todo', JSON.stringify(val));
+      },
     },
     condition: function(val) {
       if (val == 'all') {
@@ -91,8 +110,15 @@ export default {
         return true;
       }
     },
+    // useless but is a mind tools
+    filterTodos: function() {
+      return filters[this.condition](this.list);
+    },
   },
   methods: {
+    pluralize: function(word, count) {
+      return word + (count === 1 || count === 0 ? '' : 's');
+    },
     add: function() {
       this.list.push({ value: this.data, checked: false, show: true });
       this.data = '';
