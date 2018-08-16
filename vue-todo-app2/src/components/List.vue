@@ -98,7 +98,7 @@ export default {
         if (element.checked == false) {
           total = total + 1;
         }
-      });
+      })
       return total;
     },
     hasCompleted: function() {
