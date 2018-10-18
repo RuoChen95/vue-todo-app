@@ -10,14 +10,13 @@
               <div v-for="(components, index) in list" :key="index" class="section" :class="{'show': components.show}">
                   <div class="content">
                       <!--checked; priority-->
-                      <div class="condition">
-                          <input type="checkbox" v-model="components.checked" @click="toggleCheckCondition(index)"/>
-                      </div>
-                      <p :class="{'checked': components.checked}">{{components.value}}</p>
+                      <input type="checkbox" v-model="components.checked" @click="toggleCheckCondition(index)"/>
+                      <p :class="{'checked': components.checked}" v-if="editIndex != index" @dblclick="editComponents(index)">{{components.value}}</p>
                   </div>
-                  <div class="buttons">
+                  <div class="buttons" v-if="editIndex != index">
                       <div class="delete" @click="deleteSection(index)">x</div>
                   </div>
+                  <input class="edit" v-model="components.value" v-if="editIndex == index" v-todo-focus="editIndex == index" @blur="doneEdit(index)" @keyup.enter="doneEdit(index)" @keyup.esc="cancelEdit(index)">
               </div>
           </div>
           <div class="banner">
@@ -30,35 +29,45 @@
               <div @click="clear()" :class="{'show': hasCompleted}" class="clearCompleted">Clear Completed</div>
           </div>
       </div>
+
+      <footer class="info">
+        <p>Double-click to edit a todo</p>
+      <p>Prototype: <a href="http://todomvc.com">TodoMVC</a></p>
+      </footer>
   </div>
 </template>
 
 <script>
 // useless but is a mind tools
-var filters = {
-  all: function(todos) {
-    return todos;
-  },
-  active: function(todos) {
-    return todos.filter(function(todo) {
-      return !todo.completed;
-    });
-  },
-  completed: function(todos) {
-    return todos.filter(function(todo) {
-      return todo.completed;
-    });
-  },
-};
+//var filters = {
+//  all: function(todos) {
+//    return todos;
+//  },
+//  active: function(todos) {
+//    return todos.filter(function(todo) {
+//      return !todo.completed;
+//    });
+//  },
+//  completed: function(todos) {
+//    return todos.filter(function(todo) {
+//      return todo.completed;
+//    });
+//  },
+//};
 export default {
   name: 'list',
   props: {},
   data() {
     return {
       data: '',
-      list: JSON.parse(localStorage.getItem('vue-todo')) || [],
+      list: [],
       condition: 'all',
+      editCache: '',
+      editIndex: -1,
     };
+  },
+  mounted() {
+    this.list = JSON.parse(localStorage.getItem('vue-todo'));
   },
   watch: {
     list: {
@@ -115,9 +124,9 @@ export default {
       }
     },
     // useless but is a mind tools
-    filterTodos: function() {
-      return filters[this.condition](this.list);
-    },
+    //    filterTodos: function() {
+    //      return filters[this.condition](this.list);
+    //    },
   },
   methods: {
     pluralize: function(word, count) {
@@ -135,7 +144,7 @@ export default {
     },
     completeAll() {
       this.list.forEach(function(element) {
-        element.checked = true;
+        element.checked = !element.checked;
       });
     },
     clear() {
@@ -146,6 +155,26 @@ export default {
         }
       });
       this.list = arr;
+    },
+    editComponents(index) {
+      this.editCache = this.list[index].value;
+      this.editIndex = index;
+    },
+    doneEdit() {
+      this.editCache = '';
+      this.editIndex = -1;
+    },
+    cancelEdit(index) {
+      this.list[index].value = this.editCache;
+      this.editIndex = -1;
+    },
+  },
+  // a custom directive to wait for the DOM to be updated
+  // before focusing on the input field.
+  // http://vuejs.org/guide/custom-directive.html
+  directives: {
+    'todo-focus': function(el) {
+      el.focus();
     },
   },
 };
@@ -203,7 +232,7 @@ div.list {
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid #ededed;
-      padding: 0 15px 0 0;
+      padding: 0;
       &.show {
         display: flex;
       }
@@ -214,25 +243,46 @@ div.list {
       }
       div.content {
         display: flex;
+        position: relative;
         align-items: center;
-        div.condition {
+
+          padding-left: 10px;
+        input[type='checkbox'] {
           text-align: center;
-          width: 70px;
-          input[type='checkbox'] {
-          }
+          width: 40px;
+          height: 40px;
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          margin: auto 0;
+          border: none;
+          -webkit-appearance: none;
+          opacity: 0;
         }
         p.checked {
           text-decoration: line-through;
+
+          background-image: url('data:image/svg+xml;utf8,<svg%20xmlns%3D"http%3A//www.w3.org/2000/svg"%20width%3D"40"%20height%3D"40"%20viewBox%3D"-10%20-18%20100%20135"><circle%20cx%3D"50"%20cy%3D"50"%20r%3D"50"%20fill%3D"none"%20stroke%3D"%23bddad5"%20stroke-width%3D"3"/><path%20fill%3D"%235dc2af"%20d%3D"M72%2025L42%2071%2027%2056l-4%204%2020%2020%2034-52z"/></svg>');
         }
         p {
           font-size: 24px;
           word-break: break-all;
           color: #777;
           font-weight: 100;
+          width: 460px;
+
+          background-image: url('data:image/svg+xml;utf8,<svg%20xmlns%3D"http%3A//www.w3.org/2000/svg"%20width%3D"40"%20height%3D"40"%20viewBox%3D"-10%20-18%20100%20135"><circle%20cx%3D"50"%20cy%3D"50"%20r%3D"50"%20fill%3D"none"%20stroke%3D"%23ededed"%20stroke-width%3D"3"/></svg>');
+          background-repeat: no-repeat;
+          background-position: center left;
+
+          padding-left: 60px;
+
+          transition: all 0.4s;
         }
       }
       div.buttons {
         display: none;
+        padding-right: 15px;
         div.delete {
           font-size: 20px;
           color: #777;
@@ -242,6 +292,22 @@ div.list {
             color: rosybrown;
           }
         }
+      }
+      input.edit {
+        width: 495px;
+        height: 81px;
+        outline: 0;
+        font-size: 24px;
+        color: #777;
+        font-weight: 100;
+
+        border: 1px solid #999;
+        box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
+      }
+      input.edit::placeholder {
+        color: #f5f5f5;
+        font-weight: 100;
+        font-size: 24px;
       }
     }
   }
@@ -298,6 +364,19 @@ div.list {
       }
     }
   }
+}
+
+footer.info {
+    margin: 65px auto 0;
+    color: #bfbfbf;
+    font-size: 10px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    text-align: center;
+    a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: 400;
+    }
 }
 </style>
 <style lang="less" type="text/less">

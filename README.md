@@ -5,10 +5,11 @@
 
 样式以及原型参照：http://todomvc.com/examples/vue/#/all
 
-未完成：
+用到了custom directive。
 
-1. 自定义checkbox；
-2. 编辑功能；
+遗留问题：
+
+Vue如何做到即时更新
 
 
 ## Project setup
