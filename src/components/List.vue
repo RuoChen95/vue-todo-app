@@ -67,7 +67,7 @@ export default {
     };
   },
   mounted() {
-    this.list = JSON.parse(localStorage.getItem('vue-todo'));
+    this.list = JSON.parse(localStorage.getItem('vue-todo')) || [];
   },
   watch: {
     list: {
@@ -269,7 +269,10 @@ div.list {
           word-break: break-all;
           color: #777;
           font-weight: 100;
+            line-height: 2;
           width: 460px;
+            margin-top: 10px;
+            margin-bottom: 10px;
 
           background-image: url('data:image/svg+xml;utf8,<svg%20xmlns%3D"http%3A//www.w3.org/2000/svg"%20width%3D"40"%20height%3D"40"%20viewBox%3D"-10%20-18%20100%20135"><circle%20cx%3D"50"%20cy%3D"50"%20r%3D"50"%20fill%3D"none"%20stroke%3D"%23ededed"%20stroke-width%3D"3"/></svg>');
           background-repeat: no-repeat;
@@ -295,7 +298,7 @@ div.list {
       }
       input.edit {
         width: 495px;
-        height: 81px;
+        height: 66px;
         outline: 0;
         font-size: 24px;
         color: #777;
